@@ -1,52 +1,51 @@
-import { Component } from "react";
-import { Link } from "react-router-dom";
+import {Component} from 'react'
+import {Link} from 'react-router-dom'
 
-import { ThreeDots } from "react-loader-spinner";
-import "../App.css";
+import Loader from 'react-loader-spinner'
+import '../App.css'
 
 class Main extends Component {
-  state = { isLoading: true, courses: [], error: false, retry: false };
+  state = {isLoading: true, courses: [], error: false, retry: false}
 
   componentDidMount() {
-    this.getData();
-  }
-
-  componentDidUpdate() {
-    this.getData();
+    this.getData()
   }
 
   handleRetry = () => {
-    this.setState({ retry: true });
-  };
+    this.setState({retry: true}, () => {
+      this.getData()
+    })
+  }
 
   getData = async () => {
-    const resp = await fetch("https://apis.ccbp.in/te/courses");
-    const data = await resp.json();
+    const resp = await fetch('https://apis.ccbp.in/te/courses')
+    const data = await resp.json()
     if (resp.ok) {
-      this.setState({ isLoading: false, courses: data.courses, retry: false });
+      this.setState({isLoading: false, courses: data.courses, retry: false})
     } else {
       this.setState({
         isLoading: false,
         courses: [],
         error: true,
         retry: false,
-      });
+      })
     }
-  };
+  }
 
   render() {
-    const { isLoading, courses, error } = this.state;
+    const {isLoading, courses, error, retry} = this.state
+    console.log(retry)
     return (
       <div>
         <h1>Courses</h1>
 
         {isLoading ? (
           <div data-testid="loader">
-            <ThreeDots width={200} height={50} />
+            <Loader type="ThreeDots" width={200} height={50} />
           </div>
         ) : (
           <ul className="courses__ul">
-            {courses.map((course) => (
+            {courses.map(course => (
               <Link to={`/courses/${course.id}`}>
                 <li key={course.id} className="courses_li">
                   <img src={course.logo_url} alt={course.name} />
@@ -65,12 +64,14 @@ class Main extends Component {
             />
             <h1>Oops! Something Went Wrong</h1>
             <p>We cannot seem to find the page you are looking for.</p>
-            <button onClick={this.handleRetry}>Retry</button>
+            <button onClick={this.handleRetry} type="button">
+              Retry
+            </button>
           </div>
         )}
       </div>
-    );
+    )
   }
 }
 
-export default Main;
+export default Main
