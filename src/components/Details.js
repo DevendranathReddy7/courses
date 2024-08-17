@@ -1,54 +1,52 @@
-import { Component } from "react";
-import { ThreeDots } from "react-loader-spinner";
-import "../App.css";
+import {Component} from 'react'
+import Loader from 'react-loader-spinner'
+import '../App.css'
 
 class Details extends Component {
-  state = { isLoading: true, courses: {}, error: false, retry: false };
+  state = {isLoading: true, courses: {}, error: false, retry: false}
 
   componentDidMount() {
-    this.getData();
-  }
-
-  componentDidUpdate() {
-    this.getData();
+    this.getData()
   }
 
   handleRetry = () => {
-    this.setState({ retry: true });
-  };
+    this.setState({retry: true}, () => {
+      this.getData()
+    })
+  }
 
   getData = async () => {
-    const { match } = this.props;
-    const { id } = match.params;
+    const {match} = this.props
+    const {id} = match.params
 
-    const resp = await fetch(`https://apis.ccbp.in/te/courses/${id}`);
-    const data = await resp.json();
+    const resp = await fetch(`https://apis.ccbp.in/te/courses/${id}`)
+    const data = await resp.json()
     if (resp.ok) {
       this.setState({
         isLoading: false,
         courses: data.course_details,
         retry: false,
-      });
+      })
     } else {
       this.setState({
         isLoading: false,
         courses: {},
         error: true,
         retry: false,
-      });
+      })
     }
-  };
+  }
 
   render() {
-    const { isLoading, courses, error } = this.state;
-    console.log(courses);
+    const {isLoading, courses, error, retry} = this.state
+    console.log(retry)
     return (
       <div>
         <h1>Courses</h1>
 
         {isLoading ? (
           <div data-testid="loader">
-            <ThreeDots width={200} height={50} />
+            <Loader type="ThreeDots" width={200} height={50} />
           </div>
         ) : (
           <ul>
@@ -70,12 +68,14 @@ class Details extends Component {
             />
             <h1>Oops! Something Went Wrong</h1>
             <p>We cannot seem to find the page you are looking for.</p>
-            <button onClick={this.handleRetry}>Retry</button>
+            <button onClick={this.handleRetry} type="button">
+              Retry
+            </button>
           </div>
         )}
       </div>
-    );
+    )
   }
 }
 
-export default Details;
+export default Details
